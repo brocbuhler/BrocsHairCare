@@ -24,7 +24,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//
+// Home Page
 app.MapGet("/api/stylists", (HairCareDbContext db) =>
 {
     return db.Stylists
@@ -38,4 +38,59 @@ app.MapGet("/api/stylists", (HairCareDbContext db) =>
 });
 //
 
+// Appointment View ~ hard
+//
+
+//Get Appointment Price ~ hard 
+//
+
+// Appointment Create ~ hard
+//
+
+// Appointment Edit Service List ~ medium
+//
+
+// Appointment Delete ~ easy
+app.MapDelete("/api/appointments/{id}", (HairCareDbContext db, int id) =>
+{
+    Appointment appointment = db.Appointments.FirstOrDefault(a => a.Id == id);
+    if (appointment == null)
+    {
+        return Results.NotFound();
+    }
+    db.Appointments.Remove(appointment);
+    db.SaveChanges();
+    return Results.NoContent();
+});
+//
+
+//Customer Create ~ easy
+app.MapPost("/api/customers", (HairCareDbContext db, Customer customer) =>
+{
+    db.Customers.Add(customer);
+    db.SaveChanges();
+    return Results.Created($"/api/customers/{customer.Id}", customer);
+});
+//
+
+// Services Get ~ easy
+//
+
+// Add Stylist ~ easy
+//
+
+// Deactivate Stylist ~ easy
+//
+
+//Customer Get ~ easy
+app.MapGet("/api/customers/{id}", (HairCareDbContext db, int id) =>
+{
+    return db.Customers
+    .Where(c => c.Id == id)
+    .Select(c => new CustomerDTO
+    {
+        Name = c.Name,
+        Password = c.Password
+    }).ToList();
+});
 app.Run();
