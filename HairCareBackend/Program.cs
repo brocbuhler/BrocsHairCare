@@ -24,7 +24,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//
+// Home Page
 app.MapGet("/api/stylists", (HairCareDbContext db) =>
 {
     return db.Stylists
@@ -38,4 +38,84 @@ app.MapGet("/api/stylists", (HairCareDbContext db) =>
 });
 //
 
+// Appointment View ~ hard
+//
+
+//Get Appointment Price ~ hard 
+//
+
+// Appointment Create ~ hard
+//
+
+// Appointment Edit Service List ~ medium
+//
+
+// Appointment Delete ~ easy
+app.MapDelete("/api/appointments/{id}", (HairCareDbContext db, int id) =>
+{
+    Appointment appointment = db.Appointments.FirstOrDefault(a => a.Id == id);
+    if (appointment == null)
+    {
+        return Results.NotFound();
+    }
+    db.Appointments.Remove(appointment);
+    db.SaveChanges();
+    return Results.NoContent();
+});
+//
+
+//Customer Create ~ easy
+app.MapPost("/api/customers", (HairCareDbContext db, Customer customer) =>
+{
+    db.Customers.Add(customer);
+    db.SaveChanges();
+    return Results.Created($"/api/customers/{customer.Id}", customer);
+});
+//
+
+// Services Get ~ easy
+app.MapGet("/api/services/{id}", (HairCareDbContext db, int id) =>
+{
+    return db.Services
+    .Where(s => s.Id == id)
+    .Select(s => new ServiceDTO
+    {
+        Id = s.Id,
+        Type = s.Type,
+        Price = s.Price
+    }).ToList();
+});
+//
+
+// Add Stylist ~ easy
+app.MapPost("/api/stylists", (HairCareDbContext db, Stylist stylist) =>
+{
+    db.Stylists.Add(stylist);
+    db.SaveChanges();
+    return Results.Created($"/api/stylist/{stylist.Id}", stylist);
+});
+//
+
+// Deactivate Stylist ~ easy
+app.MapPatch("/api/stylists/{id}", (HairCareDbContext db, int id, Stylist Update) =>
+{
+    Stylist stylist = db.Stylists.FirstOrDefault(s => s.Id == id);
+    stylist.IsActive = Update.IsActive;
+    db.SaveChanges();
+    return Results.NoContent();
+});
+//
+
+//Customer Get ~ easy
+app.MapGet("/api/customers/{id}", (HairCareDbContext db, int id) =>
+{
+    return db.Customers
+    .Where(c => c.Id == id)
+    .Select(c => new CustomerDTO
+    {
+        Id = c.Id,
+        Name = c.Name,
+        Password = c.Password
+    }).ToList();
+});
 app.Run();
