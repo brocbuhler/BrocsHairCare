@@ -78,31 +78,47 @@ app.MapGet("/api/appointments/{id}", (HairCareDbContext db, int id) =>
 //
 
 // Appointment Create ~ hard
-// app.MapPost("/api/appointments", (HairCareDbContext db, Appointment appointment) =>
-// {
-//     var serviceIds = appointment.Services.Select(s => s.Id).ToList();
-//     var existingServices = db.Services
-//         .Where(s => serviceIds.Contains(s.Id))
-//         .ToList();
-//     appointment.Services = existingServices;
-//     db.Appointments.Add(appointment);
-//     db.SaveChanges();
-//     return Results.Created($"/api/appointments/{appointment.Id}", appointment);
-// });
+app.MapPost("/api/appointments", (HairCareDbContext db, Appointment appointment) =>
+{
+    if (appointment.AppointmentServices != null)
+    {
+        foreach (var s in appointment.AppointmentServices)
+        {
+            s.Appointment = appointment;
+        }
+    }
+
+    db.Appointments.Add(appointment);
+    db.SaveChanges();
+
+    return Results.Created($"/api/appointments/{appointment.Id}", new
+    {
+        appointment.Id,
+        appointment.StylistId,
+        appointment.CustomerId,
+        appointment.AppointmentTime,
+        AppointmentServices = appointment.AppointmentServices?
+            .Select(s => new { s.ServiceId })
+            .ToList()
+    });
+});
 //
 
 // Appointment Edit Service List ~ medium
-// app.MapPatch("/api/appointments/{id}", (HairCareDbContext db, int id, Appointment Update) =>
-// {
-//     Appointment appointment = db.Appointments.FirstOrDefault(a => a.Id == id);
-//     if (appointment == null)
-//     {
-//         return Results.NotFound();
-//     }
-//     appointment.Services = Update.Services;
-//     db.SaveChanges();
-//     return Results.NoContent();
-// });
+app.MapPatch("/api/appointments/{id}", (HairCareDbContext db, int id, Appointment Update) =>
+{
+        Appointment appointment = db.Appointments
+        .Include(a => a.AppointmentServices)
+        .FirstOrDefault(a => a.Id == id);
+    if (appointment == null)
+    {
+        return Results.NotFound();
+    }
+    db.AppointmentServices.RemoveRange(appointment.AppointmentServices);
+    appointment.AppointmentServices = Update.AppointmentServices;
+    db.SaveChanges();
+    return Results.NoContent();
+});
 //
 
 // Appointment Delete ~ easy
