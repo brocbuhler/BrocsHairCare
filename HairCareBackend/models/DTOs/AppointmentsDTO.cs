@@ -12,13 +12,8 @@ public class AppointmentDTO
   public int CustomerId { get; set; }
   public CustomerDTO customer { get; set; }
   [Required]
-  public List<ServiceDTO> Services { get; set; } = new List<ServiceDTO>();
+    public List<ServiceDTO> AppointmentServices { get; set; }
   public DateTime AppointmentTime { get; set; }
-  public decimal TotalPrice
-  {
-    get
-    {
-      return Services.Sum(s => s.Price);
-    }
-  }
+  public decimal TotalPrice { get; set; }
+
 }
