@@ -38,16 +38,87 @@ app.MapGet("/api/stylists", (HairCareDbContext db) =>
 });
 //
 
-// Appointment View ~ hard
-//
-
-//Get Appointment Price ~ hard 
+//Get Appointment Price ~ hard
+app.MapGet("/api/appointments/{id}", (HairCareDbContext db, int id) =>
+{
+    return db.Appointments
+    .Include(a => a.stylist)
+    .Include(a => a.customer)
+    .Include(a => a.AppointmentServices)
+        .ThenInclude(app => app.Service)
+    .Where(a => a.Id == id)
+    .Select(a => new AppointmentDTO
+    {
+        Id = a.Id,
+        StylistId = a.StylistId,
+        stylist = new StylistDTO
+        {
+            Id = a.stylist.Id,
+            Name = a.stylist.Name,
+            IsActive = a.stylist.IsActive
+        },
+        CustomerId = a.CustomerId,
+        customer = new CustomerDTO
+        {
+            Id = a.customer.Id,
+            Name = a.customer.Name,
+            Password = a.customer.Password
+        },
+        AppointmentServices = a.AppointmentServices
+        .Select(s => new ServiceDTO
+        {
+            Id = s.Service.Id,
+            Type = s.Service.Type,
+            Price = s.Service.Price
+        }).ToList(),
+        AppointmentTime = a.AppointmentTime,
+        TotalPrice = a.AppointmentServices.Sum(app => app.Service.Price)
+    }).FirstOrDefault();
+});
 //
 
 // Appointment Create ~ hard
+app.MapPost("/api/appointments", (HairCareDbContext db, Appointment appointment) =>
+{
+    if (appointment.AppointmentServices != null)
+    {
+        foreach (var s in appointment.AppointmentServices)
+        {
+            s.Appointment = appointment;
+        }
+    }
+
+    db.Appointments.Add(appointment);
+    db.SaveChanges();
+
+    return Results.Created($"/api/appointments/{appointment.Id}", new
+    {
+        appointment.Id,
+        appointment.StylistId,
+        appointment.CustomerId,
+        appointment.AppointmentTime,
+        AppointmentServices = appointment.AppointmentServices?
+            .Select(s => new { s.ServiceId })
+            .ToList()
+    });
+});
 //
 
 // Appointment Edit Service List ~ medium
+app.MapPatch("/api/appointments/{id}", (HairCareDbContext db, int id, Appointment Update) =>
+{
+        Appointment appointment = db.Appointments
+        .Include(a => a.AppointmentServices)
+        .FirstOrDefault(a => a.Id == id);
+    if (appointment == null)
+    {
+        return Results.NotFound();
+    }
+    db.AppointmentServices.RemoveRange(appointment.AppointmentServices);
+    appointment.AppointmentServices = Update.AppointmentServices;
+    db.SaveChanges();
+    return Results.NoContent();
+});
 //
 
 // Appointment Delete ~ easy

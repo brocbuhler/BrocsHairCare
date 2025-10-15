@@ -9,4 +9,7 @@ public class ServiceDTO
   public string Type { get; set; }
   [Required]
   public decimal Price { get; set; }
+  public List<AppointmentDTO> Appointments { get; set; }
+  public List<AppointmentServicesDTO> AppointmentServices { get; set; }
+
 }

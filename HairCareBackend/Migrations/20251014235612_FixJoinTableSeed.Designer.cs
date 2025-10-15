@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HairCareBackend.Migrations
 {
     [DbContext(typeof(HairCareDbContext))]
-    partial class HairCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251014235612_FixJoinTableSeed")]
+    partial class FixJoinTableSeed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,12 +38,17 @@ namespace HairCareBackend.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("StylistId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("ServiceId");
 
                     b.HasIndex("StylistId");
 
@@ -73,9 +81,6 @@ namespace HairCareBackend.Migrations
                     b.Property<int>("ServiceId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ServiceId1")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AppointmentId");
@@ -83,8 +88,6 @@ namespace HairCareBackend.Migrations
                     b.HasIndex("AppointmentId1");
 
                     b.HasIndex("ServiceId");
-
-                    b.HasIndex("ServiceId1");
 
                     b.ToTable("AppointmentServices");
 
@@ -232,6 +235,10 @@ namespace HairCareBackend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("HairCareBackend.Models.Service", null)
+                        .WithMany("Appointments")
+                        .HasForeignKey("ServiceId");
+
                     b.HasOne("HairCareBackend.Models.Stylist", "stylist")
                         .WithMany()
                         .HasForeignKey("StylistId")
@@ -261,10 +268,6 @@ namespace HairCareBackend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HairCareBackend.Models.Service", null)
-                        .WithMany("AppointmentServices")
-                        .HasForeignKey("ServiceId1");
-
                     b.Navigation("Appointment");
 
                     b.Navigation("Service");
@@ -277,7 +280,7 @@ namespace HairCareBackend.Migrations
 
             modelBuilder.Entity("HairCareBackend.Models.Service", b =>
                 {
-                    b.Navigation("AppointmentServices");
+                    b.Navigation("Appointments");
                 });
 #pragma warning restore 612, 618
         }
