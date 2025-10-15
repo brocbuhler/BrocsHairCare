@@ -12,6 +12,6 @@ public class Appointment
   public int CustomerId { get; set; }
   public Customer customer { get; set; }
   [Required]
-  public List<Service> Services { get; set; } = new List<Service>();
   public DateTime AppointmentTime { get; set; }
+  public List<AppointmentServices> AppointmentServices { get; set; }
 }

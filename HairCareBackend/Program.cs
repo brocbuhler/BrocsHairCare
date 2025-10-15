@@ -38,16 +38,71 @@ app.MapGet("/api/stylists", (HairCareDbContext db) =>
 });
 //
 
-// Appointment View ~ hard
-//
-
-//Get Appointment Price ~ hard 
+//Get Appointment Price ~ hard
+app.MapGet("/api/appointments/{id}", (HairCareDbContext db, int id) =>
+{
+    return db.Appointments
+    .Include(a => a.stylist)
+    .Include(a => a.customer)
+    .Include(a => a.AppointmentServices)
+        .ThenInclude(app => app.Service)
+    .Where(a => a.Id == id)
+    .Select(a => new AppointmentDTO
+    {
+        Id = a.Id,
+        StylistId = a.StylistId,
+        stylist = new StylistDTO
+        {
+            Id = a.stylist.Id,
+            Name = a.stylist.Name,
+            IsActive = a.stylist.IsActive
+        },
+        CustomerId = a.CustomerId,
+        customer = new CustomerDTO
+        {
+            Id = a.customer.Id,
+            Name = a.customer.Name,
+            Password = a.customer.Password
+        },
+        AppointmentServices = a.AppointmentServices
+        .Select(s => new ServiceDTO
+        {
+            Id = s.Service.Id,
+            Type = s.Service.Type,
+            Price = s.Service.Price
+        }).ToList(),
+        AppointmentTime = a.AppointmentTime,
+        TotalPrice = a.AppointmentServices.Sum(app => app.Service.Price)
+    }).FirstOrDefault();
+});
 //
 
 // Appointment Create ~ hard
+// app.MapPost("/api/appointments", (HairCareDbContext db, Appointment appointment) =>
+// {
+//     var serviceIds = appointment.Services.Select(s => s.Id).ToList();
+//     var existingServices = db.Services
+//         .Where(s => serviceIds.Contains(s.Id))
+//         .ToList();
+//     appointment.Services = existingServices;
+//     db.Appointments.Add(appointment);
+//     db.SaveChanges();
+//     return Results.Created($"/api/appointments/{appointment.Id}", appointment);
+// });
 //
 
 // Appointment Edit Service List ~ medium
+// app.MapPatch("/api/appointments/{id}", (HairCareDbContext db, int id, Appointment Update) =>
+// {
+//     Appointment appointment = db.Appointments.FirstOrDefault(a => a.Id == id);
+//     if (appointment == null)
+//     {
+//         return Results.NotFound();
+//     }
+//     appointment.Services = Update.Services;
+//     db.SaveChanges();
+//     return Results.NoContent();
+// });
 //
 
 // Appointment Delete ~ easy

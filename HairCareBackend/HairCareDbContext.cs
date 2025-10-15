@@ -8,6 +8,8 @@ public class HairCareDbContext : DbContext
     public DbSet<Stylist> Stylists { get; set; }
     public DbSet<Service> Services { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
+    public DbSet<AppointmentServices> AppointmentServices { get; set; }
+
 
   public HairCareDbContext(DbContextOptions<HairCareDbContext> context) : base(context) { }
 
@@ -23,6 +25,26 @@ public class HairCareDbContext : DbContext
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
+
+    modelBuilder.Entity<AppointmentServices>()
+        .HasKey(a => a.Id);
+
+modelBuilder.Entity<AppointmentServices>()
+    .HasOne(a => a.Appointment)
+    .WithMany(a => a.AppointmentServices)
+    .HasForeignKey(a => a.AppointmentId);
+
+modelBuilder.Entity<AppointmentServices>()
+    .HasOne(a => a.Service)
+    .WithMany(s => s.AppointmentServices)
+    .HasForeignKey(a => a.ServiceId);
+
+
+    modelBuilder.Entity<AppointmentServices>().HasData(new AppointmentServices[]
+    {
+      new AppointmentServices {Id = 1, AppointmentId = 1, ServiceId = 2, },
+      new AppointmentServices {Id = 2, AppointmentId = 1, ServiceId = 3, }
+    });
     modelBuilder.Entity<Customer>().HasData(new Customer[]
     {
       new Customer { Id = 1, Name = "Aaron", Password = "ClonesAreCool"},
