@@ -154,7 +154,7 @@ app.MapGet("/api/services/{id}", (HairCareDbContext db, int id) =>
         Id = s.Id,
         Type = s.Type,
         Price = s.Price
-    }).ToList();
+    }).FirstOrDefault();
 });
 //
 
@@ -187,6 +187,6 @@ app.MapGet("/api/customers/{id}", (HairCareDbContext db, int id) =>
         Id = c.Id,
         Name = c.Name,
         Password = c.Password
-    }).ToList();
+    }).FirstOrDefault();
 });
 app.Run();
