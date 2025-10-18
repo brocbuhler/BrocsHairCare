@@ -21,11 +21,10 @@ const patchAppointment = (id, appointment) => {
 };
 
 const deleteAppointment = (id) => {
-  const result = fetch(`${_apiUrl}/${id}`, {
+  fetch(`${_apiUrl}/${id}`, {
     method: "DELETE",
   });
-  if (result.status === 204) return null;
-  return result.json();
 };
+
 
 export {getAppointment, patchAppointment, createAppointment, deleteAppointment}

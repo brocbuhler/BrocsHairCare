@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HairCareBackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+967c4a80724c2772ce6003ae19783f1303828beb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1ec0dcb3039134fc6cf5df383ec993b2a6ce34ab")]
 [assembly: System.Reflection.AssemblyProductAttribute("HairCareBackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HairCareBackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

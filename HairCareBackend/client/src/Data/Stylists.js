@@ -1,7 +1,7 @@
 const _apiUrl = "/api/stylists";
 
-const getStylist = (id) => {
-  return fetch(`${_apiUrl}/${id}`).then((r) => r.json());
+const getStylists = () => {
+  return fetch(_apiUrl).then((res) => res.json());
 };
 
 const createStylist = (stylist) => {
@@ -20,4 +20,4 @@ const patchStylist = (id, stylist) => {
   }).then((res) => res.json());
 };
 
-export {getStylist, createStylist, patchStylist};
+export {getStylists, createStylist, patchStylist};

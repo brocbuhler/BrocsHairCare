@@ -8,8 +8,8 @@ const createCustomer = (customer) => {
   }).then((res) => res.json());
 };
 
-const getAppointment = (id) => {
+const getCustomer = (id) => {
   return fetch(`${_apiUrl}/${id}`).then((r) => r.json());
 };
 
-export {createCustomer, getAppointment};
+export {createCustomer, getCustomer};
